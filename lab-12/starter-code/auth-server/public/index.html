@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+
+<!-- The top of file index.html -->
+<html itemscope itemtype="http://schema.org/Article">
+<head>
+  <!-- BEGIN Pre-requisites -->
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js">
+  </script>
+  <script src="https://apis.google.com/js/client:platform.js?onload=start" async defer>
+  </script>
+  <!-- END Pre-requisites -->
+<!-- Continuing the <head> section -->
+  <script>
+    function start() {
+      gapi.load('auth2', function() {
+        auth2 = gapi.auth2.init({
+          client_id: '608943615068-0svcaon2l0g91lr1o7rm3mrgkbdpvfkr.apps.googleusercontent.com',
+          redirect_uri: 'www.google.com',
+          state: 'asldfjdfs'
+        });
+      });
+    }
+  </script>
+</head>
+
+<body>
+
+<!-- Add where you want your sign-in button to render -->
+<!-- Use an image that follows the branding guidelines in a real app -->
+<button id="signinButton">Sign in with Google</button>
+<script>
+  $('#signinButton').click(function() {
+    // signInCallback defined in step 6.
+    auth2.grantOfflineAccess().then(signInCallback);
+  });
+</script>
+<script>
+  function ignInCallback(authResult) {
+    if (authResult['code']) {
+      console.log('CODE FROM GOOGLE', authResult);
+  
+      // Hide the sign-in button now that the user is authorized, for example:
+      $('#signinButton').attr('style', 'display: none');
+  
+      // Send the code to the server
+      $.ajax({
+        type: 'POST',
+        url: 'http://localhost:3000/oauth',
+        data: {code: authResult['code']},
+      });
+    } else {
+      console.log('there was no code');
+    }
+  }
+  </script>
+<script>
+  function signInCallback(authResult) {
+    if (authResult['code']) {
+      console.log('CODE FROM GOOGLE', authResult);
+  
+      // Hide the sign-in button now that the user is authorized, for example:
+      $('#signinButton').attr('style', 'display: none');
+  
+      // Send the code to the server
+      $.post('http://localhost:3000/oauth', authResult)
+      .then (result => {
+        console.log('result', result);
+      })
+    } else {
+      console.log('there was no code');
+    }
+  }
+  </script>
+
+</body>
+
+</html>
